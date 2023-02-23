@@ -88,4 +88,17 @@ client.on('carTelemetry',function(data) {
 
 // and when you want to stop:
 // client.stop();
+// import { F1TelemetryClient } from "f1-2021-udp";
 
+// const client = new F1TelemetryClient({
+//   ip: "0.0.0.0", // listen on all available interfaces
+//   port: 20777,
+// });
+
+// client.start();
+
+// client.on("carTelemetry", function (data) {
+//   console.log(data.m_carTelemetryData[data.m_header.m_playerCarIndex]);
+// });
+
+// ...
