@@ -1,4 +1,10 @@
 import { F1TelemetryClient } from "f1-2021-udp";
+import AWS from 'aws-sdk'
+
+const kinesis = new AWS.Kinesis({
+    apiVersion: '2013-12-02',
+    region: 'ap-south-1', // replace with your AWS region
+});
 /*
 *   'port' is optional, defaults to 20777
 
@@ -18,8 +24,8 @@ import { F1TelemetryClient } from "f1-2021-udp";
     You can consume telemetry data using forwardAddresses instead.              
 */
 
+const streamName = 'grande-strategia';
 const client = new F1TelemetryClient({binaryButtonFlags: false});
-
 
 
 client.start();
@@ -55,7 +61,22 @@ client.start();
 
 // car telemetry 6
 client.on('carTelemetry',function(data) {
-    console.log(data.m_carTelemetryData[data.m_header.m_playerCarIndex]);
+    // console.log(data.m_carTelemetryData[data.m_header.m_playerCarIndex]);
+    const record = {
+        Data:JSON.stringify(data.m_carTelemetryData[data.m_header.m_playerCarIndex]),
+        PartitionKey: 'Car-1'
+      };
+      kinesis.putRecord({
+        Data: record.Data,
+        StreamName: streamName,
+        PartitionKey: record.PartitionKey
+      }, (err, data) => {
+        if (err) {
+          console.log(`Error sending data to Kinesis Data Stream: ${err}`);
+        } else {
+          console.log(`Data sent to Kinesis Data Stream:`);
+        }
+      });
 })
 
 // // car status 7

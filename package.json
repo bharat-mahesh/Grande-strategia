@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-  
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,7 +10,9 @@
   "license": "ISC",
   "type": "module",
   "dependencies": {
+    "@aws-sdk/client-kinesis": "^3.296.0",
+    "aws-sdk": "^2.1340.0",
+    "dotenv": "^16.0.3",
     "f1-2021-udp": "^1.15.989"
   }
-  
 }
