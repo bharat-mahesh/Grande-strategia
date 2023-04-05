@@ -1,10 +1,12 @@
 import { F1TelemetryClient } from "f1-2021-udp";
-import AWS from 'aws-sdk'
+import {KinesisClient,PutRecordCommand} from '@aws-sdk/client-kinesis'
 
-const kinesis = new AWS.Kinesis({
-    apiVersion: '2013-12-02',
-    region: 'ap-south-1', // replace with your AWS region
+const kinesis = new KinesisClient({ 
+  region: "ap-south-1",
+ 
 });
+
+
 /*
 *   'port' is optional, defaults to 20777
 
@@ -41,9 +43,20 @@ client.start();
 // })
 
 // lap data 2
-    // client.on('lapData',function(data) {
-    //     console.log(data);
-    // })
+    client.on('lapData',function(data) {
+      console.log(data.m_lapData[data.m_header.m_playerCarIndex].m_lapDistance);
+      const record = {
+        Data2: Buffer.from(JSON.stringify(data.m_lapData[data.m_header.m_playerCarIndex])),
+        PartitionKey: 'Lapdata'
+      };
+      const params = {
+        Data: record.Data2,
+        StreamName: streamName,
+        PartitionKey: record.PartitionKey
+      };
+      const command = new PutRecordCommand(params);
+      kinesis.send(command)
+    })
 // event 3
 // client.on('event',function(data) {
 //     console.log(data);
@@ -60,24 +73,26 @@ client.start();
 // })
 
 // car telemetry 6
-client.on('carTelemetry',function(data) {
-    // console.log(data.m_carTelemetryData[data.m_header.m_playerCarIndex]);
-    const record = {
-        Data:JSON.stringify(data.m_carTelemetryData[data.m_header.m_playerCarIndex]),
-        PartitionKey: 'Car-1'
-      };
-      kinesis.putRecord({
-        Data: record.Data,
-        StreamName: streamName,
-        PartitionKey: record.PartitionKey
-      }, (err, data) => {
-        if (err) {
-          console.log(`Error sending data to Kinesis Data Stream: ${err}`);
-        } else {
-          console.log(`Data sent to Kinesis Data Stream:`);
-        }
-      });
-})
+client.on('carTelemetry', function(data) {
+  const record = {
+    Data: Buffer.from(JSON.stringify(data.m_carTelemetryData[data.m_header.m_playerCarIndex])),
+    PartitionKey: 'Car-1'
+  };
+  const params = {
+    Data: record.Data,
+    StreamName: streamName,
+    PartitionKey: record.PartitionKey
+  };
+  const command = new PutRecordCommand(params);
+
+  kinesis.send(command)
+    .then((data) => {
+      // console.log(`Data sent to Kinesis Data Stream:`);
+    })
+    .catch((error) => {
+      console.log(`Error sending data to Kinesis Data Stream: ${error}`);
+    });
+});
 
 // // car status 7
 // client.on('carStatus',function(data) {
