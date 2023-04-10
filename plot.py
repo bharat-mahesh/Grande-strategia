@@ -2,6 +2,9 @@ import boto3
 import matplotlib.pyplot as plt
 import json
 import time
+import numpy as np
+from numpy import load
+import csv
 
 client = boto3.client('kinesis')
 stream_name = 'grande-strategia'
@@ -13,6 +16,25 @@ shard_iterator = client.get_shard_iterator(
     ShardIteratorType='LATEST'
 )['ShardIterator']
 
+#-----------------------------------------------------------------------------------------------
+with open('tracks.json', 'r') as f:
+    data = json.load(f)
+
+track_name = input("Enter the name of a track: ")
+
+track = None
+for t in data['tracks']:
+    if t['name'] == track_name:
+        track = t
+        break
+
+if track:
+    track_length = track['length']
+    print(f"The length of {track_name} is {track_length} meters.")
+else:
+    print(f"{track_name} was not found in the list of tracks.")
+
+#------------------------------------------------------------------------------------------------
 # initialize the plot
 fig, (ax,ax_throttle,ax_brake) = plt.subplots(nrows=3, ncols=1, sharex=True)
 ax.set_xlabel('Distance')
@@ -27,13 +49,13 @@ ax_brake.set_xlabel('Distance')
 ax_brake.set_ylabel('Brake')
 
 # set the x and y limits of the plot
-ax.set_xlim(0, 5412)
+ax.set_xlim(0, track_length)
 ax.set_ylim(0, 400)
 
-ax_throttle.set_xlim(0, 5412)
+ax_throttle.set_xlim(0, track_length)
 ax_throttle.set_ylim(0, 2)
 
-ax_brake.set_xlim(0, 5412)
+ax_brake.set_xlim(0, track_length)
 ax_brake.set_ylim(0, 2)
 
 # initialize the line object
@@ -100,3 +122,23 @@ while True:
     # # update the plot
     plt.draw()
     plt.pause(0.2)
+
+    #-----------------------------------------
+#     # Saving arrays
+#     np.savez('data.npz', throttle=throttle, speeds=speeds, distance=distance)
+
+# # Saving plot
+#     plt.savefig('myplot.png')
+#     data = load('data.npz')
+#     lst = data.files
+#     for item in lst:
+#         print(item)
+#         print(data[item])
+#------------------------------------------------------
+
+# Save data to CSV file
+    with open('data.csv', mode='w', newline='') as file:
+        writer = csv.writer(file)
+        writer.writerow(['Throttle', 'Speeds', 'Distance'])
+        for i in range(len(throttle)):
+            writer.writerow([throttle[i], speeds[i], distance[i]])

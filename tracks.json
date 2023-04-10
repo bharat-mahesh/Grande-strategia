@@ -1,0 +1,20 @@
+{
+    "tracks": [
+        {
+            "name": "Nürburgring Nordschleife",
+            "length": 20832
+        },
+        {
+            "name": "Circuit de la Sarthe",
+            "length": 13617
+        },
+        {
+            "name": "Bahrain",
+            "length": 5412
+        },
+        {
+            "name": "Spa",
+            "length": 7004
+        }
+    ]
+}
