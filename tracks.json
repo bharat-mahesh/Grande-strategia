@@ -1,20 +1,100 @@
 {
     "tracks": [
         {
-            "name": "Nürburgring Nordschleife",
-            "length": 20832
+            "name": "Albert Park",
+            "length": 5303
         },
         {
-            "name": "Circuit de la Sarthe",
-            "length": 13617
+            "name": "Imola",
+            "length": 4909
         },
         {
-            "name": "Bahrain",
+            "name": "Bahrain International Circuit",
             "length": 5412
         },
         {
-            "name": "Spa",
+            "name": "Spa-Francorchamps",
             "length": 7004
+        },
+        {
+            "name": "Portimao",
+            "length": 5412
+        },
+        {
+            "name": "Shanghai International Circuit",
+            "length": 5412
+        },
+        {
+            "name": "Circuit de Barcelona - Catalunya",
+            "length": 5412
+        },
+        {
+            "name": "Circuit de Monaco",
+            "length": 5412
+        },
+        {
+            "name": "Baku City Circuit",
+            "length": 5412
+        },
+        {
+            "name": "Circuit Gilles Villeneuve",
+            "length": 5412
+        },
+        {
+            "name": "Circuit Paul Ricard",
+            "length": 5412
+        },
+        {
+            "name": "Red Bull Ring",
+            "length": 5412
+        },
+        {
+            "name": "Silverstone",
+            "length": 5412
+        },
+        {
+            "name": "Hungaroring",
+            "length": 5412
+        },
+        {
+            "name": "Zandvoort",
+            "length": 5412
+        },
+        {
+            "name": "Monza",
+            "length": 5412
+        },
+        {
+            "name": "Sochi Autodrom",
+            "length": 5412
+        },
+        {
+            "name": "Marina Bay",
+            "length": 5412
+        },
+         {
+            "name": "Suzuka",
+            "length": 5412
+        },
+         {
+            "name": "Circuit of the Americas",
+            "length": 5412
+        },
+         {
+            "name": "Circuit Hermanos Rodriguez",
+            "length": 5412
+        },
+         {
+            "name": "Interlagos",
+            "length": 5412
+        },
+         {
+            "name": "Jeddah Street Circuit",
+            "length": 5412
+        },
+         {
+            "name": "Yas Marina Circuit",
+            "length": 5412
         }
     ]
 }
