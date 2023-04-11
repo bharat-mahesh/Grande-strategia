@@ -36,7 +36,7 @@ else:
 
 #------------------------------------------------------------------------------------------------
 # initialize the plot
-fig, (ax,ax_throttle,ax_brake) = plt.subplots(nrows=3, ncols=1, sharex=True)
+fig, (ax,ax_throttle,ax_brake,axTeammate,ax_throttleTeammate,ax_brakeTeammate) = plt.subplots(nrows=6, ncols=1)
 ax.set_xlabel('Distance')
 ax.set_ylabel('Speed')
 
@@ -48,6 +48,17 @@ ax_throttle.set_ylabel('Throttle')
 ax_brake.set_xlabel('Distance')
 ax_brake.set_ylabel('Brake')
 
+axTeammate.set_xlabel('Distance')
+axTeammate.set_ylabel('Speed')
+
+
+ax_throttleTeammate.set_xlabel('Distance')
+ax_throttleTeammate.set_ylabel('Throttle')
+
+
+ax_brakeTeammate.set_xlabel('Distance')
+ax_brakeTeammate.set_ylabel('Brake')
+
 # set the x and y limits of the plot
 ax.set_xlim(0, track_length)
 ax.set_ylim(0, 400)
@@ -58,17 +69,38 @@ ax_throttle.set_ylim(0, 2)
 ax_brake.set_xlim(0, track_length)
 ax_brake.set_ylim(0, 2)
 
+axTeammate.set_xlim(0, track_length)
+axTeammate.set_ylim(0, 400)
+
+ax_throttleTeammate.set_xlim(0, track_length)
+ax_throttleTeammate.set_ylim(0, 2)
+
+ax_brakeTeammate.set_xlim(0, track_length)
+ax_brakeTeammate.set_ylim(0, 2)
 # initialize the line object
 line, = ax.plot([], [])
 line2,=ax_throttle.plot([],[])
 line3,=ax_brake.plot([],[])
+
+line4, = axTeammate.plot([], [])
+line5,=ax_throttleTeammate.plot([],[])
+line6,=ax_brakeTeammate.plot([],[])
 # initialize the list of speeds and dictionary of lap counts
-throttle=[]
-speeds = []
-distance=[]
-count=0
-lap_counts=1
-m_lapNumber=0
+throttle_1=[]
+speeds_1 = []
+distance_1=[]
+brake_1=[]
+count_1=0
+lap_counts_1=1
+m_lapNumber_1=0
+
+throttle_2=[]
+speeds_2 = []
+distance_2=[]
+brake_2=[]
+count_2=0
+lap_counts_2=1
+m_lapNumber_2=0
 while True:
     # get the latest records
     response = client.get_records(
@@ -81,47 +113,79 @@ while True:
 
     # extract the speed data and lap count from the records
     for record in response['Records']:
-        if record["PartitionKey"]=='Lapdata':
+        if record["PartitionKey"]=='Lapdata-1':
+            data_str1 = record["Data"].decode('utf-8')
+            data_obj1 = json.loads(data_str1)
+            m_lapNumber_1=data_obj1['m_currentLapNum']
+            m_lapdistance_1=data_obj1['m_lapDistance']
+        elif record["PartitionKey"]=='Lapdata-2':
             data_str2 = record["Data"].decode('utf-8')
             data_obj2 = json.loads(data_str2)
-            m_lapNumber=data_obj2['m_currentLapNum']
-            m_lapdistance=data_obj2['m_lapDistance']
-        else:
-            data_str=record["Data"].decode("utf8")
-            data_obj = json.loads(data_str)
-            m_speed = data_obj['m_speed']
-            m_throttle=data_obj['m_throttle']
-            m_brake=data_obj['m_brake']
-            if m_speed !=0:
-                speeds.append(m_speed)
-                distance.append(m_lapdistance)                
-                throttle.append(m_throttle)
-                brake.append(m_brake)
+            m_lapNumber_2=data_obj2['m_currentLapNum']
+            m_lapdistance_2=data_obj2['m_lapDistance']
+        elif record["PartitionKey"]=='Car-1':
+            data_str3=record["Data"].decode("utf8")
+            data_obj3 = json.loads(data_str3)
+            m_speed_1 = data_obj3['m_speed']
+            m_throttle_1=data_obj3['m_throttle']
+            m_brake_1=data_obj3['m_brake']
+            if m_speed_1 !=0:
+                speeds_1.append(m_speed_1)
+                distance_1.append(m_lapdistance_1)                
+                throttle_1.append(m_throttle_1)
+                brake_1.append(m_brake_1)
+        elif record["PartitionKey"]=='Car-2':
+            data_str4=record["Data"].decode("utf8")
+            data_obj4 = json.loads(data_str4)
+            m_speed_2 = data_obj4['m_speed']
+            m_throttle_2=data_obj4['m_throttle']
+            m_brake_2=data_obj4['m_brake']
+            if m_speed_2 !=0:
+                speeds_2.append(m_speed_2)
+                distance_2.append(m_lapdistance_2)                
+                throttle_2.append(m_throttle_2)
+                brake_2.append(m_brake_2)
         # update the dictionary of lap counts
     # print("SPEED",speeds)
     # print("Distance",distance)    
     # check if any lap counts have changed
         
-    if lap_counts !=m_lapNumber:
-        speeds=[]
-        distance=[]
-        throttle=[]
-        brake=[]
-        lap_counts=m_lapNumber
+    if lap_counts_1 !=m_lapNumber_1:
+        speeds_1=[]
+        distance_1=[]
+        throttle_1=[]
+        brake_1=[]
+        lap_counts_1=m_lapNumber_1
+    
+    if lap_counts_2 !=m_lapNumber_2:
+        speeds_2=[]
+        distance_2=[]
+        throttle_2=[]
+        brake_2=[]
+        lap_counts_2=m_lapNumber_2
     
     # update the plot data
-    line.set_xdata(distance)
-    line.set_ydata(speeds)
+    line.set_xdata(distance_1)
+    line.set_ydata(speeds_1)
 
-    line2.set_xdata(distance)
-    line2.set_ydata(throttle)
+    line2.set_xdata(distance_1)
+    line2.set_ydata(throttle_1)
 
-    line3.set_xdata(distance)
-    line3.set_ydata(brake)
+    line3.set_xdata(distance_1)
+    line3.set_ydata(brake_1)
+
+    line4.set_xdata(distance_2)
+    line4.set_ydata(speeds_2)
+
+    line5.set_xdata(distance_2)
+    line5.set_ydata(throttle_2)
+
+    line6.set_xdata(distance_2)
+    line6.set_ydata(brake_2)
 
     # # update the plot
     plt.draw()
-    plt.pause(0.2)
+    plt.pause(0.1)
 
     #-----------------------------------------
 #     # Saving arrays
@@ -137,8 +201,8 @@ while True:
 #------------------------------------------------------
 
 # Save data to CSV file
-    with open('data.csv', mode='w', newline='') as file:
-        writer = csv.writer(file)
-        writer.writerow(['Throttle', 'Speeds', 'Distance'])
-        for i in range(len(throttle)):
-            writer.writerow([throttle[i], speeds[i], distance[i]])
+    # with open('data.csv', mode='w', newline='') as file:
+    #     writer = csv.writer(file)
+    #     writer.writerow(['Throttle', 'Speeds', 'Distance'])
+    #     for i in range(len(throttle)):
+    #         writer.writerow([throttle[i], speeds[i], distance[i]])

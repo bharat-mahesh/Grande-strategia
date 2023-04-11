@@ -3,8 +3,9 @@ import {KinesisClient,PutRecordCommand} from '@aws-sdk/client-kinesis'
 
 const kinesis = new KinesisClient({ 
   region: "ap-south-1",
- 
+  
 });
+let teammate=19
 
 
 /*
@@ -24,14 +25,17 @@ const kinesis = new KinesisClient({
 *   'skipParsing' is optional, defaults to false
     setting it to true will make the client not parse and emit content.
     You can consume telemetry data using forwardAddresses instead.              
-*/
-
-const streamName = 'grande-strategia';
-const client = new F1TelemetryClient({binaryButtonFlags: false});
-
-
-client.start();
-
+    */
+   
+   const streamName = 'grande-strategia';
+   const client = new F1TelemetryClient({binaryButtonFlags: false});
+   
+   
+   client.start();
+   
+   client.on('participants',function(data) {  
+     teammate=((data.m_participants.findIndex(x=> x.m_teamId==data.m_participants[19].m_teamId)));
+   })
 // motion 0
 // client.on('motion',function(data) {
 //     console.log(data);
@@ -44,28 +48,37 @@ client.start();
 
 // lap data 2
     client.on('lapData',function(data) {
-      console.log(data.m_lapData[data.m_header.m_playerCarIndex].m_lapDistance);
-      const record = {
+      // console.log(data.m_lapData[data.m_header.m_playerCarIndex].m_lapDistance);
+      const record_lapMyCar = {
         Data2: Buffer.from(JSON.stringify(data.m_lapData[data.m_header.m_playerCarIndex])),
-        PartitionKey: 'Lapdata'
+        PartitionKey: 'Lapdata-1'
       };
-      const params = {
-        Data: record.Data2,
+      const params_lapMyCar = {
+        Data: record_lapMyCar.Data2,
         StreamName: streamName,
-        PartitionKey: record.PartitionKey
+        PartitionKey: record_lapMyCar.PartitionKey
       };
-      const command = new PutRecordCommand(params);
-      kinesis.send(command)
+      const command_lapMyCar = new PutRecordCommand(params_lapMyCar);
+
+      const record_lapTeammate = {
+        Data2: Buffer.from(JSON.stringify(data.m_lapData[teammate])),
+        PartitionKey: 'Lapdata-2'
+      };
+      const params_lapTeammate = {
+        Data: record_lapTeammate.Data2,
+        StreamName: streamName,
+        PartitionKey: record_lapTeammate.PartitionKey
+      };
+      const command_lapTeammate = new PutRecordCommand(params_lapTeammate);
+
+      kinesis.send(command_lapMyCar)
+      kinesis.send(command_lapTeammate)
     })
 // event 3
 // client.on('event',function(data) {
 //     console.log(data);
 // })
-
 // participants 4
-// client.on('participants',function(data) {
-//     console.log(data);
-// })
 
 // // car setup 5
 // client.on('carSetups',function(data) {
@@ -74,24 +87,45 @@ client.start();
 
 // car telemetry 6
 client.on('carTelemetry', function(data) {
-  const record = {
+  // console.log(data.m_carTelemetryData[teammate])
+  
+  const record_myCar = {
     Data: Buffer.from(JSON.stringify(data.m_carTelemetryData[data.m_header.m_playerCarIndex])),
     PartitionKey: 'Car-1'
   };
-  const params = {
-    Data: record.Data,
+  const params_myCar = {
+    Data: record_myCar.Data,
     StreamName: streamName,
-    PartitionKey: record.PartitionKey
+    PartitionKey: record_myCar.PartitionKey
   };
-  const command = new PutRecordCommand(params);
+  const record_teammate = {
+    Data: Buffer.from(JSON.stringify(data.m_carTelemetryData[teammate])),
+    PartitionKey: 'Car-2'
+  };
+  const params_teammateCar = {
+    Data: record_teammate.Data,
+    StreamName: streamName,
+    PartitionKey: record_teammate.PartitionKey
+  };
+  const command_myCar = new PutRecordCommand(params_myCar);
+  const command_teammateCar = new PutRecordCommand(params_teammateCar);
 
-  kinesis.send(command)
+  kinesis.send(command_myCar)
     .then((data) => {
-      // console.log(`Data sent to Kinesis Data Stream:`);
+      console.log(`My car data sent to Kinesis Data Stream:`);
     })
     .catch((error) => {
-      console.log(`Error sending data to Kinesis Data Stream: ${error}`);
+      console.log(`Error sending data to Kinesis Data Stream(Self): ${error}`);
     });
+
+    kinesis.send(command_teammateCar)
+    .then((data) => {
+      console.log(`Teammate data sent to Kinesis Data Stream:`);
+    })
+    .catch((error) => {
+      console.log(`Error sending data to Kinesis Data Stream(TM): ${error}`);
+    });
+
 });
 
 // // car status 7
