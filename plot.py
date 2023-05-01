@@ -162,6 +162,7 @@ gear_1=[]
 count_1 = 0
 lap_counts_1 = 1
 m_lapNumber_1 = 0
+m_timelastlap_1=0
 
 throttle_2 = []
 speeds_2 = []
@@ -171,6 +172,7 @@ gear_2=[]
 count_2 = 0
 lap_counts_2 = 1
 m_lapNumber_2 = 0
+m_timelastlap_2=0
 while True:
     # get the latest records
     response = client.get_records(ShardIterator=shard_iterator, Limit=100)
@@ -185,11 +187,13 @@ while True:
             data_obj1 = json.loads(data_str1)
             m_lapNumber_1 = data_obj1["m_currentLapNum"]
             m_lapdistance_1 = data_obj1["m_lapDistance"]
+            m_timelastlap_1=data_obj1["m_lastLapTimeInMS"]
         elif record["PartitionKey"] == "Lapdata-2":
             data_str2 = record["Data"].decode("utf-8")
             data_obj2 = json.loads(data_str2)
             m_lapNumber_2 = data_obj2["m_currentLapNum"]
             m_lapdistance_2 = data_obj2["m_lapDistance"]
+            m_timelastlap_2=data_obj2["m_lastLapTimeInMS"]
         elif record["PartitionKey"] == "Car-1":
             data_str3 = record["Data"].decode("utf8")
             data_obj3 = json.loads(data_str3)
@@ -222,6 +226,16 @@ while True:
     # check if any lap counts have changed
 
     if lap_counts_1 != m_lapNumber_1:
+        print("Last lap time of #1 driver: ",m_timelastlap_1)
+        with open('lapdata.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Throttle', 'Speeds', 'Distance','Brake','Gear','Lap'])  # write header
+            for i in range(len(distance_1)):
+                writer.writerow([throttle_1[i], speeds_1[i], distance_1[i],brake_1[i],gear_1[i],m_lapNumber_1])
+
+        s3 = boto3.client('s3')
+        bucket_name = 'myteamplayer1'
+        s3.upload_file('lapdata.csv', bucket_name, 'lapdata.csv')
         speeds_1 = []
         distance_1 = []
         throttle_1 = []
@@ -234,6 +248,16 @@ while True:
         # ax_gear_merge.clear()
 
     if lap_counts_2 != m_lapNumber_2:
+        print("Last lap time of #2 driver: ",m_timelastlap_2)
+        with open('lapdata2.csv', mode='w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow(['Throttle', 'Speeds', 'Distance','Brake','Gear','Lap'])  # write header
+            for i in range(len(distance_2)):
+                writer.writerow([throttle_2[i], speeds_2[i], distance_2[i],brake_2[i],gear_2[i],m_lapNumber_2])
+
+        s3 = boto3.client('s3')
+        bucket_name = 'myteamplayer1'
+        s3.upload_file('lapdata2.csv', bucket_name, 'lapdata2.csv')
         speeds_2 = []
         distance_2 = []
         throttle_2 = []
