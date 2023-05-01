@@ -18,19 +18,33 @@ shard_iterator = client.get_shard_iterator(
 with open("tracks.json", "r") as f:
     data = json.load(f)
 
-track_name = input("Enter the name of a track: ")
+# track_name = input("Enter the name of a track: ")
+print("Select a track number:")
+for i, t in enumerate(data["tracks"]):
+    print(f"{i+1}. {t['name']}")
 
-track = None
-for t in data["tracks"]:
-    if t["name"] == track_name:
-        track = t
-        break
 
-if track:
+# track = None
+# for t in data["tracks"]:
+#     if t["name"] == track_name:
+#         track = t
+#         break
+track_number = int(input())
+if 1 <= track_number <= len(data["tracks"]):
+    track = data["tracks"][track_number - 1]
+    track_name = track["name"]
     track_length = track["length"]
     print(f"The length of {track_name} is {track_length} meters.")
 else:
-    print(f"{track_name} was not found in the list of tracks.")
+    print(
+        f"Invalid track number. Please select a number between 1 and {len(data['tracks'])}."
+    )
+
+# if track:
+#     track_length = track["length"]
+#     print(f"The length of {track_name} is {track_length} meters.")
+# else:
+#     print(f"{track_name} was not found in the list of tracks.")
 
 # ------------------------------------------------------------------------------------------------
 # initialize the plot
@@ -99,7 +113,6 @@ ax_throttle_merge.set_ylim(0, 2)
 
 ax_brake_merge.set_xlim(0, track_length)
 ax_brake_merge.set_ylim(0, 2)
-
 
 
 axTeammate.set_xlim(0, track_length)
