@@ -52,13 +52,16 @@ fig, (
     ax,
     ax_throttle,
     ax_brake,
+    ax_gear,
     axTeammate,
     ax_throttleTeammate,
     ax_brakeTeammate,
-    axspeed_merge,
-    ax_throttle_merge,
-    ax_brake_merge,
-) = plt.subplots(nrows=9, ncols=1)
+    ax_gearTeammate,
+    # axspeed_merge,
+    # ax_throttle_merge,
+    # ax_brake_merge,
+    # ax_gear_merge,
+) = plt.subplots(nrows=8, ncols=1)
 
 
 ax.set_xlabel("Distance")
@@ -72,6 +75,9 @@ ax_throttle.set_ylabel("Throttle")
 ax_brake.set_xlabel("Distance")
 ax_brake.set_ylabel("Brake")
 
+ax_gear.set_xlabel("Distance")
+ax_gear.set_ylabel("Gear")
+
 axTeammate.set_xlabel("Distance")
 axTeammate.set_ylabel("Speed")
 
@@ -83,16 +89,22 @@ ax_throttleTeammate.set_ylabel("Throttle")
 ax_brakeTeammate.set_xlabel("Distance")
 ax_brakeTeammate.set_ylabel("Brake")
 
-axspeed_merge.set_xlabel("Distance")
-axspeed_merge.set_ylabel("Speed")
+ax_gearTeammate.set_xlabel("Distance")
+ax_gearTeammate.set_ylabel("Gear")
+
+# axspeed_merge.set_xlabel("Distance")
+# axspeed_merge.set_ylabel("Speed")
 
 
-ax_throttle_merge.set_xlabel("Distance")
-ax_throttle_merge.set_ylabel("Throttle")
+# ax_throttle_merge.set_xlabel("Distance")
+# ax_throttle_merge.set_ylabel("Throttle")
 
 
-ax_brake_merge.set_xlabel("Distance")
-ax_brake_merge.set_ylabel("Brake")
+# ax_brake_merge.set_xlabel("Distance")
+# ax_brake_merge.set_ylabel("Brake")
+
+# ax_gear_merge.set_xlabel("Distance")
+# ax_gear_merge.set_ylabel("Gear")
 
 # set the x and y limits of the plot
 ax.set_xlim(0, track_length)
@@ -104,15 +116,21 @@ ax_throttle.set_ylim(0, 2)
 ax_brake.set_xlim(0, track_length)
 ax_brake.set_ylim(0, 2)
 
+ax_gear.set_xlim(0, track_length)
+ax_gear.set_ylim(0, 10)
 
-axspeed_merge.set_xlim(0, track_length)
-axspeed_merge.set_ylim(0, 400)
 
-ax_throttle_merge.set_xlim(0, track_length)
-ax_throttle_merge.set_ylim(0, 2)
+# axspeed_merge.set_xlim(0, track_length)
+# axspeed_merge.set_ylim(0, 400)
 
-ax_brake_merge.set_xlim(0, track_length)
-ax_brake_merge.set_ylim(0, 2)
+# ax_throttle_merge.set_xlim(0, track_length)
+# ax_throttle_merge.set_ylim(0, 2)
+
+# ax_brake_merge.set_xlim(0, track_length)
+# ax_brake_merge.set_ylim(0, 2)
+
+# ax_gear_merge.set_xlim(0, track_length)
+# ax_gear_merge.set_ylim(0, 10)
 
 
 axTeammate.set_xlim(0, track_length)
@@ -123,19 +141,24 @@ ax_throttleTeammate.set_ylim(0, 2)
 
 ax_brakeTeammate.set_xlim(0, track_length)
 ax_brakeTeammate.set_ylim(0, 2)
+
+ax_gearTeammate.set_xlim(0, track_length)
+ax_gearTeammate.set_ylim(0, 10)
 # initialize the line object
 (line,) = ax.plot([], [])
 (line2,) = ax_throttle.plot([], [])
 (line3,) = ax_brake.plot([], [])
-
+(line7,) = ax_gear.plot([], [])
 (line4,) = axTeammate.plot([], [])
 (line5,) = ax_throttleTeammate.plot([], [])
 (line6,) = ax_brakeTeammate.plot([], [])
+(line8,) = ax_gearTeammate.plot([], [])
 # initialize the list of speeds and dictionary of lap counts
 throttle_1 = []
 speeds_1 = []
 distance_1 = []
 brake_1 = []
+gear_1=[]
 count_1 = 0
 lap_counts_1 = 1
 m_lapNumber_1 = 0
@@ -144,6 +167,7 @@ throttle_2 = []
 speeds_2 = []
 distance_2 = []
 brake_2 = []
+gear_2=[]
 count_2 = 0
 lap_counts_2 = 1
 m_lapNumber_2 = 0
@@ -172,22 +196,26 @@ while True:
             m_speed_1 = data_obj3["m_speed"]
             m_throttle_1 = data_obj3["m_throttle"]
             m_brake_1 = data_obj3["m_brake"]
+            m_gear_1 = data_obj3["m_gear"]
             if m_speed_1 != 0:
                 speeds_1.append(m_speed_1)
                 distance_1.append(m_lapdistance_1)
                 throttle_1.append(m_throttle_1)
                 brake_1.append(m_brake_1)
+                gear_1.append(m_gear_1)
         elif record["PartitionKey"] == "Car-2":
             data_str4 = record["Data"].decode("utf8")
             data_obj4 = json.loads(data_str4)
             m_speed_2 = data_obj4["m_speed"]
             m_throttle_2 = data_obj4["m_throttle"]
             m_brake_2 = data_obj4["m_brake"]
+            m_gear_2 = data_obj4["m_gear"]
             if m_speed_2 != 0:
                 speeds_2.append(m_speed_2)
                 distance_2.append(m_lapdistance_2)
                 throttle_2.append(m_throttle_2)
                 brake_2.append(m_brake_2)
+                gear_2.append(m_gear_2)
         # update the dictionary of lap counts
     # print("SPEED",speeds)
     # print("Distance",distance)
@@ -198,21 +226,24 @@ while True:
         distance_1 = []
         throttle_1 = []
         brake_1 = []
+        gear_1=[]
         lap_counts_1 = m_lapNumber_1
-        axspeed_merge.clear()
-        ax_throttle_merge.clear()
-        ax_brake_merge.clear()
+        # axspeed_merge.clear()
+        # ax_throttle_merge.clear()
+        # ax_brake_merge.clear()
+        # ax_gear_merge.clear()
 
     if lap_counts_2 != m_lapNumber_2:
         speeds_2 = []
         distance_2 = []
         throttle_2 = []
         brake_2 = []
+        gear_2=[]
         lap_counts_2 = m_lapNumber_2
-        axspeed_merge.clear()
-        ax_throttle_merge.clear()
-        ax_brake_merge.clear()
-
+        # axspeed_merge.clear()
+        # ax_throttle_merge.clear()
+        # ax_brake_merge.clear()
+        # ax_gear_merge.clear()
     # update the plot data
     line.set_xdata(distance_1)
     line.set_ydata(speeds_1)
@@ -223,6 +254,10 @@ while True:
     line3.set_xdata(distance_1)
     line3.set_ydata(brake_1)
 
+    line7.set_xdata(distance_1)
+    line7.set_ydata(gear_1)
+
+
     line4.set_xdata(distance_2)
     line4.set_ydata(speeds_2)
 
@@ -232,14 +267,20 @@ while True:
     line6.set_xdata(distance_2)
     line6.set_ydata(brake_2)
 
-    axspeed_merge.plot(distance_1, speeds_1, label="Player 1")
-    axspeed_merge.plot(distance_2, speeds_2, label="Player 2")
+    line8.set_xdata(distance_2)
+    line8.set_ydata(gear_2)
 
-    ax_throttle_merge.plot(distance_1, throttle_1, label="Player 1")
-    ax_throttle_merge.plot(distance_2, throttle_2, label="Player 2")
+    # axspeed_merge.plot(distance_1, speeds_1, label="Player 1")
+    # axspeed_merge.plot(distance_2, speeds_2, label="Player 2")
 
-    ax_brake_merge.plot(distance_1, brake_1, label="Player 1")
-    ax_brake_merge.plot(distance_2, brake_2, label="Player 2")
+    # ax_throttle_merge.plot(distance_1, throttle_1, label="Player 1")
+    # ax_throttle_merge.plot(distance_2, throttle_2, label="Player 2")
+
+    # ax_brake_merge.plot(distance_1, brake_1, label="Player 1")
+    # ax_brake_merge.plot(distance_2, brake_2, label="Player 2")
+
+    # ax_gear_merge.plot(distance_1, gear_1, label="Player 1")
+    # ax_gear_merge.plot(distance_2, gear_2, label="Player 2")
 
     # # update the plot
     plt.draw()
