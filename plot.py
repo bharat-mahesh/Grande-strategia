@@ -199,6 +199,9 @@ while True:
         throttle_1 = []
         brake_1 = []
         lap_counts_1 = m_lapNumber_1
+        axspeed_merge.clear()
+        ax_throttle_merge.clear()
+        ax_brake_merge.clear()
 
     if lap_counts_2 != m_lapNumber_2:
         speeds_2 = []
@@ -206,6 +209,9 @@ while True:
         throttle_2 = []
         brake_2 = []
         lap_counts_2 = m_lapNumber_2
+        axspeed_merge.clear()
+        ax_throttle_merge.clear()
+        ax_brake_merge.clear()
 
     # update the plot data
     line.set_xdata(distance_1)
