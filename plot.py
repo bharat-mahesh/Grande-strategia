@@ -40,6 +40,11 @@ else:
         f"Invalid track number. Please select a number between 1 and {len(data['tracks'])}."
     )
 
+def convert_milliseconds_to_time(milliseconds):
+    seconds, milliseconds = divmod(milliseconds, 1000)
+    minutes, seconds = divmod(seconds, 60)
+    return f"{minutes:02d}:{seconds:02d}:{milliseconds:03d}"
+
 # if track:
 #     track_length = track["length"]
 #     print(f"The length of {track_name} is {track_length} meters.")
@@ -235,7 +240,7 @@ while True:
 
         s3 = boto3.client('s3')
         bucket_name = 'myteamplayer1'
-        s3.upload_file('lapdata.csv', bucket_name, 'lapdata.csv')
+        s3.upload_file('lapdata.csv', bucket_name,'teamlapdata/'+'lapdata.csv')
         speeds_1 = []
         distance_1 = []
         throttle_1 = []
@@ -257,7 +262,7 @@ while True:
 
         s3 = boto3.client('s3')
         bucket_name = 'myteamplayer1'
-        s3.upload_file('lapdata2.csv', bucket_name, 'lapdata2.csv')
+        s3.upload_file('lapdata2.csv', bucket_name,'teamlapdata/'+'lapdata2.csv')
         speeds_2 = []
         distance_2 = []
         throttle_2 = []
@@ -310,22 +315,4 @@ while True:
     plt.draw()
     plt.pause(0.1)
 
-    # -----------------------------------------
-#     # Saving arrays
-#     np.savez('data.npz', throttle=throttle, speeds=speeds, distance=distance)
-
-# # Saving plot
-#     plt.savefig('myplot.png')
-#     data = load('data.npz')
-#     lst = data.files
-#     for item in lst:
-#         print(item)
-#         print(data[item])
-# ------------------------------------------------------
-
-# Save data to CSV file
-# with open('data.csv', mode='w', newline='') as file:
-#     writer = csv.writer(file)
-#     writer.writerow(['Throttle', 'Speeds', 'Distance'])
-#     for i in range(len(throttle)):
-#         writer.writerow([throttle[i], speeds[i], distance[i]])
+   
