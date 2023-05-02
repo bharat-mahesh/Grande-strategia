@@ -231,7 +231,7 @@ while True:
             writer = csv.writer(file)
             writer.writerow(['Throttle', 'Speeds', 'Distance','Brake','Gear','Lap'])  # write header
             for i in range(len(distance_1)):
-                writer.writerow([throttle_1[i], speeds_1[i], distance_1[i],brake_1[i],gear_1[i],m_lapNumber_1])
+                writer.writerow([throttle_1[i], speeds_1[i], distance_1[i],brake_1[i],gear_1[i],lap_counts_1])
 
         s3 = boto3.client('s3')
         bucket_name = 'myteamplayer1'
@@ -253,7 +253,7 @@ while True:
             writer = csv.writer(file)
             writer.writerow(['Throttle', 'Speeds', 'Distance','Brake','Gear','Lap'])  # write header
             for i in range(len(distance_2)):
-                writer.writerow([throttle_2[i], speeds_2[i], distance_2[i],brake_2[i],gear_2[i],m_lapNumber_2])
+                writer.writerow([throttle_2[i], speeds_2[i], distance_2[i],brake_2[i],gear_2[i],lap_counts_2])
 
         s3 = boto3.client('s3')
         bucket_name = 'myteamplayer1'
